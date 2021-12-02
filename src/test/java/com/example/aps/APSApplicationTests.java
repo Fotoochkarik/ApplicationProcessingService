@@ -1,10 +1,10 @@
-package com.example.applicationprocessingservice;
+package com.example.aps;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApplicationProcessingServiceApplicationTests {
+class APSApplicationTests {
 
     @Test
     void contextLoads() {

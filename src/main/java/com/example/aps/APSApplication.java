@@ -1,13 +1,13 @@
-package com.example.applicationprocessingservice;
+package com.example.aps;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ApplicationProcessingServiceApplication {
+public class APSApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApplicationProcessingServiceApplication.class, args);
+        SpringApplication.run(APSApplication.class, args);
     }
 
 }
