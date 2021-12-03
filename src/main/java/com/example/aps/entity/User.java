@@ -25,7 +25,7 @@ import static javax.persistence.FetchType.LAZY;
 @EqualsAndHashCode(callSuper = true, exclude = {"password"})
 @ToString(callSuper = true, exclude = {"password", "requests"})
 public class User extends BaseEntity {
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "password", nullable = false)

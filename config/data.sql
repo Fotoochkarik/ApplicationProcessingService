@@ -1,6 +1,4 @@
 INSERT INTO USERS (name, password)
--- VALUES ('User', 'password'),
---        ('Admin', 'admin');
 VALUES ('User', '{noop}password'),
        ('Admin', '{noop}admin');
 

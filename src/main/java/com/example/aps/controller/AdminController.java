@@ -23,7 +23,7 @@ public class AdminController {
         return userService.getAll();
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/add-operator")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public void addOperatorRole(@PathVariable Long id) {
