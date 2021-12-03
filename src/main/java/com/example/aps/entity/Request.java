@@ -1,23 +1,20 @@
 package com.example.aps.entity;
 
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import java.io.Serializable;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Getter
-@Setter
+@Data
 @Table(name = "request")
 @NoArgsConstructor
-public class Request extends BaseEntity implements Serializable {
-
+@JsonAutoDetect
+public class Request extends BaseEntity {
     @Column(name = "created", columnDefinition = "timestamp default now()")
     private Date created = new Date();
 
@@ -27,9 +24,8 @@ public class Request extends BaseEntity implements Serializable {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @ManyToOne
-//    @JoinColumn
-//    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User author;
 
     public Request(Long id, Date created, Condition status, String description, User author) {

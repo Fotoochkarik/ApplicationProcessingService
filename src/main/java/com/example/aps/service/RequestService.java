@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RequestService {
@@ -18,8 +18,21 @@ public class RequestService {
     @Autowired
     private UserService userService;
 
-    public List<Request> getAll(Long id) {
-        return requestRepository.findAllByAuthorId(id);
+    public Request get(Long id) {
+        return requestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Request not found with id: " + id));
+    }
+
+    public Request get(Long id, Long userId) {
+        Request request = get(id);
+        if (request.getAuthor().getId().equals(userId)) {
+            return request;
+        }
+        throw new IllegalArgumentException("Does not meet the requirements");
+    }
+
+    public List<Request> getAll(Long userId) {
+        return requestRepository.findAllByAuthorId(userId);
     }
 
     public Request save(Request request, Long userId) {
@@ -29,52 +42,54 @@ public class RequestService {
             if (request.getAuthor().getId().equals(userId) && request.getStatus().equals(Condition.DRAFT)) {
                 return requestRepository.save(request);
             }
-            throw new IllegalArgumentException(" Не соответствует " + userId);
+            throw new IllegalArgumentException("Does not meet the requirements");
         }
     }
 
     public Request send(Long id, Long userId) {
-        Request request = requestRepository.getById(id);
+        Request request = get(id);
         if (!request.isNew()) {
             if (request.getAuthor().getId().equals(userId) && request.getStatus().equals(Condition.DRAFT)) {
                 request.setStatus(Condition.SENT);
                 return requestRepository.save(request);
             }
-            throw new IllegalArgumentException(" Не соответствует " + id);
+            throw new IllegalArgumentException("Does not meet the requirements");
         }
-        throw new IllegalArgumentException("Not new " + id);
+        throw new IllegalArgumentException("Must not be new " + id);
     }
 
-    public List<Request> getAllSend(Condition sent) {
-        return requestRepository.findAllByStatus(sent);
+    public List<Request> getAllWithStatusSend(Condition sent) {
+        return requestRepository.findAllByStatus(sent).stream()
+                .map(this::convertMessage)
+                .collect(Collectors.toList());
     }
 
     public Request accept(Long id) {
-        Optional<Request> optionalRequest = requestRepository.findById(id);
-        Request request = optionalRequest.orElseThrow(() -> new EntityNotFoundException("Entity not found"));
-
+        Request request = get(id);
         if (request.getStatus().equals(Condition.SENT)) {
             request.setStatus(Condition.ACCEPTED);
             return requestRepository.save(request);
         }
-        throw new IllegalArgumentException(" Не соответствует  status" + id);
+        throw new IllegalArgumentException("Does not meet the status " + Condition.SENT);
     }
 
     public Request reject(Long id) {
-        Optional<Request> optionalRequest = requestRepository.findById(id);
-        Request request = optionalRequest.orElseThrow(() -> new EntityNotFoundException("Entity not found"));
-
+        Request request = get(id);
         if (request.getStatus().equals(Condition.SENT)) {
             request.setStatus(Condition.REJECTED);
             return requestRepository.save(request);
         }
-        throw new IllegalArgumentException(" Не соответствует  status" + id);
+        throw new IllegalArgumentException("Does not meet the status " + Condition.SENT);
     }
 
-    public Request get(Long id) {
-        Request request = requestRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Entity not found" + id));
-        String newDescription = request.getDescription().replace("", "-").substring(1);
-//request.setDescription(newDescription.substring(1,newDescription.length()-1));
+    public Request getBL(Long id) {
+        return convertMessage(get(id));
+    }
+
+    public Request convertMessage(Request request) {
+        String newDescription = request.getDescription()
+                .replace("", "-")
+                .substring(1);
         request.setDescription(newDescription);
         return request;
     }

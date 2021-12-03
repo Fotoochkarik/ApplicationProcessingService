@@ -1,0 +1,22 @@
+spring:
+  jpa:
+    show-sql: true
+    open-in-view: true
+    defer-datasource-initialization: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 20
+        jdbc.batch_size: 20
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aps
+    username: user
+    password: password
+
+server.servlet:
+  encoding:
+    charset: UTF-8 # Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly
+    enabled: true # Enable http encoding support
+    force: true

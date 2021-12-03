@@ -5,7 +5,6 @@ import com.example.aps.entity.Request;
 import com.example.aps.repository.UserRepository;
 import com.example.aps.service.RequestService;
 import com.example.aps.service.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,53 +18,22 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@Slf4j
-@RequestMapping("/api/user/requests")
 @ResponseBody
+@RequestMapping("/api/user/requests")
 @PreAuthorize("hasAuthority('USER')")
 public class UserController {
-//    Пользователь может
-
-//•	создавать заявки+
-//•	просматривать созданные им заявки+
-//•	редактировать созданные им заявки в статусе «черновик»+
-//•	отправлять заявки на рассмотрение оператору.+
-
-//    Пользователь НЕ может:
-
-    //• редактировать отправленные на рассмотрение заявки+
-//•	видеть заявки других пользователей+
-//•	принимать заявки+
-//•	отклонять заявки+
-//•	назначать права+
-//•	смотреть список пользователей+
     @Autowired
     RequestService requestService;
 
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    UserRepository userRepository;
-
     @GetMapping("/")
     public List<Request> getAll(@AuthenticationPrincipal AuthUser user) {
-        log.info("getAll for user {}", user);
         return requestService.getAll(user.id());
     }
 
-//    @GetMapping("/add")
-//    public void add(@AuthenticationPrincipal AuthUser authUser) {
-//        log.info("User {}", authUser.id());
-//        for (int i = 0; i < 3; i++) {
-//            requestService.save(new Request(null, "A" + i, userRepository.findById(authUser.id()).orElseThrow(() -> new IllegalArgumentException("Not found"))), authUser.id());
-//        }
-//        for (int i = 0; i < 3; i++) {
-//            requestService.save(new Request(null, "A" + i, userRepository.findById(2L).orElseThrow(() -> new IllegalArgumentException("Not found"))), 2L);
-//        }
-//        requestService.save(new Request(null, "A" + 23, userRepository.findById(authUser.id()).orElseThrow(() -> new IllegalArgumentException("Not found"))), authUser.id());
-//
-//    }
+    @GetMapping("/{id}")
+    public Request get(@AuthenticationPrincipal AuthUser user, @PathVariable Long id) {
+        return requestService.get(id, user.id());
+    }
 
     @PostMapping
     @Transactional
@@ -83,8 +51,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public void update(@AuthenticationPrincipal AuthUser authUser,
-                       @RequestBody Request request,
-                       @PathVariable int id) {
+                       @RequestBody Request request) {
         requestService.save(request, authUser.id());
     }
 

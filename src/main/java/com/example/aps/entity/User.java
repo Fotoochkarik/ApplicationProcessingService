@@ -1,16 +1,14 @@
 package com.example.aps.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -21,11 +19,12 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
+@Data
+@JsonAutoDetect
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseEntity implements Serializable {
-
+@EqualsAndHashCode(callSuper = true, exclude = {"password"})
+@ToString(callSuper = true, exclude = {"password", "requests"})
+public class User extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -39,12 +38,13 @@ public class User extends BaseEntity implements Serializable {
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role"}, name = "uk_user_roles"))
     @Column(name = "role")
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id") //https://stackoverflow.com/a/62848296/548473
+    @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
 
-    @OneToMany(fetch = LAZY, cascade = ALL)
-    @OrderBy("author DESC")
+    @OneToMany(fetch = LAZY, mappedBy = "author", cascade = ALL)
+    @OrderBy("created DESC")
+    @JsonIgnore
     private List<Request> requests;
 
     public User(Long id, String name, String password, Collection<Role> roles) {

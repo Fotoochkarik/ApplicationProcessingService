@@ -5,7 +5,6 @@ import com.example.aps.entity.Role;
 import com.example.aps.entity.User;
 import com.example.aps.service.UserService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,10 +29,8 @@ import java.util.Set;
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
-@Slf4j
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
     @Autowired
     private UserService userService;
 
@@ -48,7 +45,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return name -> {
             User user = userService.getByName(name);
             if (user == null) throw new UsernameNotFoundException(name);
-            log.info("User {}", user);
             Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
             for (Role role : user.getRoles()) {
                 grantedAuthorities.add(new SimpleGrantedAuthority(role.name()));
@@ -60,7 +56,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-//                .antMatchers("/api/admin/**").hasRole(Role.ADMIN.name())
                 .antMatchers(HttpMethod.POST, "/").anonymous()
                 .antMatchers("/api/**").authenticated()
                 .and()
@@ -73,7 +68,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService())
-//                .passwordEncoder(NoOpPasswordEncoder.getInstance());
                 .passwordEncoder(passwordEncoder());
     }
 }
