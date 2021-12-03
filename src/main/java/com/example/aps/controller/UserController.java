@@ -21,7 +21,7 @@ import java.util.List;
 @PreAuthorize("hasAuthority('USER')")
 public class UserController {
     @Autowired
-    RequestService requestService;
+    private RequestService requestService;
 
     @GetMapping("/")
     public List<Request> getAll(@AuthenticationPrincipal AuthUser user) {

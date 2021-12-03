@@ -36,7 +36,7 @@ public class RequestService {
     }
 
     public Request save(Request request, Long userId) {
-        if (request.isNew()) {
+        if (request.isNew() || request.getId()==0) {
             return requestRepository.save(new Request(null, request.getDescription(), userService.get(userId)));
         } else {
             if (request.getAuthor().getId().equals(userId) && request.getStatus().equals(Condition.DRAFT)) {
@@ -48,7 +48,7 @@ public class RequestService {
 
     public Request send(Long id, Long userId) {
         Request request = get(id);
-        if (!request.isNew()) {
+        if (!request.isNew() || request.getId()!=0) {
             if (request.getAuthor().getId().equals(userId) && request.getStatus().equals(Condition.DRAFT)) {
                 request.setStatus(Condition.SENT);
                 return requestRepository.save(request);
@@ -83,7 +83,10 @@ public class RequestService {
     }
 
     public Request getBL(Long id) {
-        return convertMessage(get(id));
+        if(get(id).getStatus().equals(Condition.SENT)) {
+            return convertMessage(get(id));
+        }
+        throw new IllegalArgumentException("Does not meet the requirements");
     }
 
     public Request convertMessage(Request request) {

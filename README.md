@@ -64,3 +64,5 @@
 
 Использована архитектура REST /Java 1.8/ Spring Boot/ Spring Security/ Hibernate
 в качестве реляционной БД использован PostgreSQL
+
+[REST API documentation](http://localhost:8080/swagger-ui.html)

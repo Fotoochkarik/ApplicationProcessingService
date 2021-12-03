@@ -32,7 +32,7 @@ import java.util.Set;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {

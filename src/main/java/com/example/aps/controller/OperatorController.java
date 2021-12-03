@@ -17,7 +17,7 @@ import java.util.List;
 @PreAuthorize("hasAuthority('OPERATOR')")
 public class OperatorController {
     @Autowired
-    RequestService requestService;
+    private RequestService requestService;
 
     @GetMapping("/")
     public List<Request> getAllWithStatusSend() {
