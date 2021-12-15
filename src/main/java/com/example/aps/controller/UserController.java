@@ -3,7 +3,6 @@ package com.example.aps.controller;
 import com.example.aps.AuthUser;
 import com.example.aps.entity.Request;
 import com.example.aps.service.RequestService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,12 +15,14 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@ResponseBody
 @RequestMapping("/api/user/requests")
 @PreAuthorize("hasAuthority('USER')")
 public class UserController {
-    @Autowired
-    private RequestService requestService;
+    private final RequestService requestService;
+
+    public UserController(RequestService requestService) {
+        this.requestService = requestService;
+    }
 
     @GetMapping("/")
     public List<Request> getAll(@AuthenticationPrincipal AuthUser user) {

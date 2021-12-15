@@ -3,7 +3,6 @@ package com.example.aps.controller;
 import com.example.aps.entity.Condition;
 import com.example.aps.entity.Request;
 import com.example.aps.service.RequestService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@ResponseBody
 @RequestMapping("/api/operator/requests")
 @PreAuthorize("hasAuthority('OPERATOR')")
 public class OperatorController {
-    @Autowired
-    private RequestService requestService;
+    private final RequestService requestService;
+
+    public OperatorController(RequestService requestService) {
+        this.requestService = requestService;
+    }
 
     @GetMapping("/")
     public List<Request> getAllWithStatusSend() {

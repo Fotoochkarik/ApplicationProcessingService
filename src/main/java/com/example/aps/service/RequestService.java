@@ -3,7 +3,6 @@ package com.example.aps.service;
 import com.example.aps.entity.Condition;
 import com.example.aps.entity.Request;
 import com.example.aps.repository.RequestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -12,11 +11,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class RequestService {
-    @Autowired
-    RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public RequestService(RequestRepository requestRepository, UserService userService) {
+        this.requestRepository = requestRepository;
+        this.userService = userService;
+    }
 
     public Request get(Long id) {
         return requestRepository.findById(id)
@@ -36,8 +38,8 @@ public class RequestService {
     }
 
     public Request save(Request request, Long userId) {
-        if (request.isNew() || request.getId()==0) {
-            return requestRepository.save(new Request(null, request.getDescription(), userService.get(userId)));
+        if (request.isNew() || request.getId() == 0) {
+            return requestRepository.save(new Request(request.getDescription(), userService.get(userId)));
         } else {
             if (request.getAuthor().getId().equals(userId) && request.getStatus().equals(Condition.DRAFT)) {
                 return requestRepository.save(request);
@@ -48,7 +50,7 @@ public class RequestService {
 
     public Request send(Long id, Long userId) {
         Request request = get(id);
-        if (!request.isNew() || request.getId()!=0) {
+        if (!request.isNew() || request.getId() != 0) {
             if (request.getAuthor().getId().equals(userId) && request.getStatus().equals(Condition.DRAFT)) {
                 request.setStatus(Condition.SENT);
                 return requestRepository.save(request);
@@ -83,17 +85,20 @@ public class RequestService {
     }
 
     public Request getBL(Long id) {
-        if(get(id).getStatus().equals(Condition.SENT)) {
+        if (get(id).getStatus().equals(Condition.SENT)) {
             return convertMessage(get(id));
         }
-        throw new IllegalArgumentException("Does not meet the requirements");
+        throw new IllegalArgumentException("Does not meet the status " + Condition.SENT);
     }
 
     public Request convertMessage(Request request) {
-        String newDescription = request.getDescription()
-                .replace("", "-")
-                .substring(1);
-        request.setDescription(newDescription);
-        return request;
+        if (request != null) {
+            String newDescription = request.getDescription()
+                    .replace("", "-")
+                    .substring(1);
+            request.setDescription(newDescription);
+            return request;
+        }
+        throw new IllegalArgumentException("Should not be null");
     }
 }

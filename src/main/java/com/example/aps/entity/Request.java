@@ -1,10 +1,7 @@
 package com.example.aps.entity;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -15,32 +12,24 @@ import java.util.Date;
 @Data
 @Table(name = "request")
 @NoArgsConstructor
-@JsonAutoDetect
+@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Request extends BaseEntity {
     @Column(name = "created", columnDefinition = "timestamp default now()")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @NonNull
     private Date created = new Date();
 
     @Column(name = "status", nullable = false)
-    private Condition status;
+    @NonNull
+    private Condition status = Condition.DRAFT;
 
     @Column(name = "description", nullable = false)
+    @NonNull
     private String description;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @NonNull
     private User author;
-
-    public Request(Long id, Date created, Condition status, String description, User author) {
-        super(id);
-        this.created = created;
-        this.status = status;
-        this.description = description;
-        this.author = author;
-    }
-
-    public Request(Long id, String description, User author) {
-        this(id, new Date(), Condition.DRAFT, description, author);
-    }
 }

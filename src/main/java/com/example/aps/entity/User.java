@@ -1,6 +1,5 @@
 package com.example.aps.entity;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -20,7 +19,6 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Table(name = "users")
 @Data
-@JsonAutoDetect
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = true, exclude = {"password"})
 @ToString(callSuper = true, exclude = {"password", "requests"})
@@ -46,13 +44,6 @@ public class User extends BaseEntity {
     @OrderBy("created DESC")
     @JsonIgnore
     private List<Request> requests;
-
-    public User(Long id, String name, String password, Collection<Role> roles) {
-        super(id);
-        this.name = name;
-        this.password = password;
-        setRoles(roles);
-    }
 
     public void setRoles(Collection<Role> roles) {
         this.roles = CollectionUtils.isEmpty(roles) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
